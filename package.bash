@@ -2,8 +2,10 @@
 
 set -e # To fail on errors
 
+export BASE_DISTRO_NAME="kinetic"
+
 if [[ -z ${CUSTOM_DISTRO_NAME} ]]; then
-  export CUSTOM_DISTRO_NAME="kinetic-custom"
+  export CUSTOM_DISTRO_NAME="${BASE_DISTRO_NAME}-custom"
   echo "Custom distro name is not set, defaulting to ${CUSTOM_DISTRO_NAME}"
 fi
 
@@ -31,7 +33,7 @@ fi
 
 echo "Creating workspace"
 cd ${WORKSPACE}
-catkin config --extend /opt/ros/kinetic -i /opt/ros/${CUSTOM_DISTRO_NAME} --install
+catkin config --extend /opt/ros/${BASE_DISTRO_NAME} -i /opt/ros/${CUSTOM_DISTRO_NAME} --install
 
 echo "Installing packages"
 cd ${WORKSPACE}/src
