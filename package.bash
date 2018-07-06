@@ -36,8 +36,10 @@ cd ${WORKSPACE}
 catkin config --extend /opt/ros/${BASE_DISTRO_NAME} -i /opt/ros/${CUSTOM_DISTRO_NAME} --install
 
 echo "Installing packages"
-cd ${WORKSPACE}/src
-wstool update
+if [ -f "${WORKSPACE}/src/.rosinstall" ]; then
+  cd ${WORKSPACE}/src
+  wstool update
+fi
 
 echo "Installing dependencies"
 apt-get update
