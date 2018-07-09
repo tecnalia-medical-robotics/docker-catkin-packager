@@ -44,7 +44,7 @@ fi
 echo "Installing dependencies"
 apt-get update
 rosdep update
-rosdep install -iy --from-paths ${WORKSPACE}/src
+rosdep install -q -iy --from-paths ${WORKSPACE}/src
 
 echo "Building"
 catkin build --summarize --no-status
