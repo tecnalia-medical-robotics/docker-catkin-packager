@@ -1,6 +1,15 @@
-FROM ros:kinetic
+FROM ubuntu:xenial
 
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+
+RUN apt-get update -qq && apt-get install -qq -y \
+    dirmngr \
+    gnupg2 \
+    lsb-release
+
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 421C365BD9FF1F717815A3895523BAEEB01FA116
+
+RUN echo "deb http://packages.ros.org/ros/ubuntu `lsb_release -sc` main" > /etc/apt/sources.list.d/ros-latest.list
 
 RUN apt-get update -qq \
     && apt-get -qq install --no-install-recommends -y apt-utils gnupg wget ca-certificates lsb-release
@@ -12,8 +21,9 @@ RUN sed -i "/^# deb.*multiverse/ s/^# //" /etc/apt/sources.list \
         python-catkin-tools \
         python-pip \
         python-rosdep \
+        python-rosinstall-generator \
         python-wstool \
-        ros-$ROS_DISTRO-catkin \
+        ros-kinetic-catkin \
         ruby \
         ruby-dev \
         rubygems \

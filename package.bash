@@ -33,17 +33,26 @@ fi
 
 echo "Creating workspace"
 cd ${WORKSPACE}
-catkin config --extend /opt/ros/${BASE_DISTRO_NAME} -i /opt/ros/${CUSTOM_DISTRO_NAME} --install
+catkin config --no-extend -i /opt/ros/${CUSTOM_DISTRO_NAME} --install
 
-echo "Installing packages"
+echo "Installing project packages"
 if [ -f "${WORKSPACE}/src/.rosinstall" ]; then
   cd ${WORKSPACE}/src
   wstool update
+else
+  cd ${WORKSPACE}/src
+  wstool init
 fi
+
+echo "Installing depended ROS packages"
+rosdep init
+rosdep update
+cd ${WORKSPACE}/src
+rosinstall_generator --deps --tar --rosdistro ${BASE_DISTRO_NAME} $(comm -23 <(rosdep keys --from-paths . | sort) <(catkin list -w .. -u | sort)) | wstool merge -
+wstool update
 
 echo "Installing dependencies"
 apt-get update
-rosdep update
 rosdep install -q -iy --from-paths ${WORKSPACE}/src
 
 echo "Building"
