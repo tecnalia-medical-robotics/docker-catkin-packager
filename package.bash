@@ -60,5 +60,5 @@ for package in $(catkin list -u -w ${WORKSPACE}); do
   fi
 done
 cd /debout
-DEP_FLAGS="-d $(rosdep resolve $(comm -23 <(rosdep keys --from-paths ${WORKSPACE}/src | sort) <(catkin list -w ${WORKSPACE} -u | sort)) | grep -v '#' | sed -E -e 's/[[:blank:]]+/\n/g' | sed ':a;N;$!ba;s/\n/ -d /g')"
+DEP_FLAGS="-d $(rosdep resolve $(comm -23 <(rosdep keys --from-paths ${WORKSPACE}/src | sort) <(catkin list -w ${WORKSPACE} -u | sort)) | grep -v '#' | sed '/^\s*$/d' | sed -E -e 's/[[:blank:]]+/\n/g' | sed ':a;N;$!ba;s/\n/ -d /g')"
 fpm -s dir -t deb -n ${PACKAGE_NAME} -v ${VERSION_NUMBER} ${DEP_FLAGS} ${UDEVRULES} /opt/ros/${CUSTOM_DISTRO_NAME}
