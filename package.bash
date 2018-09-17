@@ -33,7 +33,7 @@ fi
 
 echo "Creating workspace"
 cd ${WORKSPACE}
-catkin config --no-extend -i /opt/ros/${CUSTOM_DISTRO_NAME} --install
+catkin config --no-extend -i /opt/ros/${CUSTOM_DISTRO_NAME} --install --cmake-args -DCMAKE_BUILD_TYPE=Release
 
 echo "Installing project packages"
 if [ -f "${WORKSPACE}/src/.rosinstall" ]; then
