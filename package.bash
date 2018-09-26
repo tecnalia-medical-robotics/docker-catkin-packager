@@ -60,14 +60,28 @@ catkin build --summarize --no-status
 
 echo "Generating DEB"
 mkdir /udevrules
+mkdir /icons
+mkdir /desktops
 export UDEVRULES=""
+export ICONFILES=""
+export DESKTOPFILES=""
 for package in $(catkin list -u -w ${WORKSPACE}); do
   export UDEVFILE="$(catkin locate -w ${WORKSPACE} ${package})/debian/udev"
+  export ICONFILE="$(catkin locate -w ${WORKSPACE} ${package})/debian/*.png"
+  export DESKTOPFILE="$(catkin locate -w ${WORKSPACE} ${package})/debian/*.desktop"
   if [ -f ${UDEVFILE} ]; then
     cp ${UDEVFILE} /udevrules/99-${package}.rules
     export UDEVRULES="/udevrules/=/etc/udev/rules.d"
   fi
+  for f in ${ICONFILE}; do 
+    cp $f icons/
+    export ICONFILES="/icons/=/usr/share/icons"
+  done
+  for f in ${DESKTOPFILE}; do 
+    cp $f desktops/
+    export DESKTOPFILES="/desktops/=/usr/share/applications"
+  done
 done
 cd /debout
 DEP_FLAGS="-d $(rosdep resolve $(comm -23 <(rosdep keys --from-paths ${WORKSPACE}/src | sort) <(catkin list -w ${WORKSPACE} -u | sort)) | grep -v '#' | sed '/^\s*$/d' | sed -E -e 's/[[:blank:]]+/\n/g' | sed ':a;N;$!ba;s/\n/ -d /g')"
-fpm -s dir -t deb -n ${PACKAGE_NAME} -v ${VERSION_NUMBER} ${DEP_FLAGS} ${UDEVRULES} /opt/ros/${CUSTOM_DISTRO_NAME}
+fpm -s dir -t deb -n ${PACKAGE_NAME} -v ${VERSION_NUMBER} ${DEP_FLAGS} ${UDEVRULES} ${ICONFILES} ${DESKTOPFILES} /opt/ros/${CUSTOM_DISTRO_NAME}
