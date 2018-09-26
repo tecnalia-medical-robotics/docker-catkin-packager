@@ -74,12 +74,16 @@ for package in $(catkin list -u -w ${WORKSPACE}); do
     export UDEVRULES="/udevrules/=/etc/udev/rules.d"
   fi
   for f in ${ICONFILE}; do 
-    cp $f icons/
-    export ICONFILES="/icons/=/usr/share/icons"
+    if [ -f  $f ]; then 
+      cp $f icons/
+      export ICONFILES="/icons/=/usr/share/icons"
+    fi
   done
   for f in ${DESKTOPFILE}; do 
-    cp $f desktops/
-    export DESKTOPFILES="/desktops/=/usr/share/applications"
+    if [ -f  $f ]; then 
+      cp $f desktops/
+      export DESKTOPFILES="/desktops/=/usr/share/applications"
+    fi
   done
 done
 cd /debout
