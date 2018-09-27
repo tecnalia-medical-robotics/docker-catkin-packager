@@ -60,14 +60,21 @@ catkin build --summarize --no-status
 
 echo "Generating DEB"
 mkdir /udevrules
+mkdir /share
 export UDEVRULES=""
+export SHARE=""
 for package in $(catkin list -u -w ${WORKSPACE}); do
   export UDEVFILE="$(catkin locate -w ${WORKSPACE} ${package})/debian/udev"
+  export SHAREDIR="$(catkin locate -w ${WORKSPACE} ${package})/debian/share"
   if [ -f ${UDEVFILE} ]; then
     cp ${UDEVFILE} /udevrules/99-${package}.rules
     export UDEVRULES="/udevrules/=/etc/udev/rules.d"
   fi
+  if [ -d $SHAREDIR ]; then
+    cp -R $SHAREDIR/* /share/
+    export SHARE="/share/=/usr/share"
+  fi
 done
 cd /debout
 DEP_FLAGS="-d $(rosdep resolve $(comm -23 <(rosdep keys --from-paths ${WORKSPACE}/src | sort) <(catkin list -w ${WORKSPACE} -u | sort)) | grep -v '#' | sed '/^\s*$/d' | sed -E -e 's/[[:blank:]]+/\n/g' | sed ':a;N;$!ba;s/\n/ -d /g')"
-fpm -s dir -t deb -n ${PACKAGE_NAME} -v ${VERSION_NUMBER} ${DEP_FLAGS} ${UDEVRULES} /opt/ros/${CUSTOM_DISTRO_NAME}
+fpm -s dir -t deb -n ${PACKAGE_NAME} -v ${VERSION_NUMBER} ${DEP_FLAGS} ${UDEVRULES} ${SHARE} /opt/ros/${CUSTOM_DISTRO_NAME}
